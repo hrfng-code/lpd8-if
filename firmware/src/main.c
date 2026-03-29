@@ -5,7 +5,7 @@
 #include "mcp4728.h"
 #include "gate_driver.h"
 #include "midi_handler.h"
-#include "usb_midi_host.h"
+#include "midi_app.h"
 
 int main(void) {
     // ── SDK and stdio init ────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ int main(void) {
 
     // ── TinyUSB host ──────────────────────────────────────────────────────────
     tusb_init();
-    usb_midi_host_init();
+    midi_app_init();
 
     // ── Main loop ─────────────────────────────────────────────────────────────
     // All MIDI processing (DAC writes, gate updates) happens inside

@@ -7,14 +7,16 @@
 
 // ── MCU ──────────────────────────────────────────────────────────────────────
 // pico-sdk sets CFG_TUSB_MCU to OPT_MCU_RP2040 for both RP2040 and RP2350.
-// This is intentional: the USB controller is register-compatible and the
-// native host driver compiles and runs correctly on the Pico 2 (RP2350).
+// This is intentional: the USB controller is register-compatible.
 #ifndef CFG_TUSB_MCU
   #error "CFG_TUSB_MCU must be set by the build system (pico-sdk provides it)"
 #endif
 
 // ── Task model ───────────────────────────────────────────────────────────────
-#define CFG_TUSB_OS             OPT_OS_NONE     // bare-metal cooperative polling
+// pico-sdk sets this via -D on the command line; guard to avoid redefinition.
+#ifndef CFG_TUSB_OS
+  #define CFG_TUSB_OS             OPT_OS_NONE   // bare-metal cooperative polling
+#endif
 
 // ── Debug ────────────────────────────────────────────────────────────────────
 #define CFG_TUSB_DEBUG          0               // set to 2 for verbose USB logs on UART
@@ -27,10 +29,9 @@
 #define CFG_TUH_ENABLED         1
 
 // Use the native RP2350 USB controller (port 0 = physical USB connector).
-// PIO-USB is not needed and not used.
-// If you ever reroute USB to a custom connector via PIO, comment out
-// BOARD_TUH_RHPORT 0 and instead set CFG_TUH_RPI_PIO_USB 1 + RHPORT 1.
+// Declare port 0 as host mode — required by TinyUSB 0.16+.
 #define BOARD_TUH_RHPORT        0
+#define CFG_TUSB_RHPORT0_MODE   OPT_MODE_HOST
 
 // ── Device limits ────────────────────────────────────────────────────────────
 #define CFG_TUH_DEVICE_MAX      1               // only the LPD8, no hub
@@ -38,16 +39,17 @@
 #define CFG_TUH_ENUMERATION_BUFSIZE  256
 
 // ── Class drivers ────────────────────────────────────────────────────────────
-#define CFG_TUH_MIDI            1               // MIDI host class only
+// MIDI host is provided by the rppicomidi/usb_midi_host external library
+// via the usbh_app_driver_get_cb() extension point — NOT via CFG_TUH_MIDI.
+// CFG_TUH_MIDI is intentionally not defined here.
 #define CFG_TUH_CDC             0
 #define CFG_TUH_HID             0
 #define CFG_TUH_MSC             0
 #define CFG_TUH_VENDOR          0
 
-// ── MIDI buffers ─────────────────────────────────────────────────────────────
+// ── MIDI buffers (consumed by usb_midi_host library) ─────────────────────────
 #define CFG_TUH_MIDI_RX_BUFSIZE     64
 #define CFG_TUH_MIDI_TX_BUFSIZE     64
 #define CFG_TUH_MIDI_EP_BUFSIZE     64
-#define CFG_TUH_MIDI_STREAM_API     1           // enable tuh_midi_stream_read()
 
 #endif // TUSB_CONFIG_H

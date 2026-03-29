@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# build — configure and compile lpd8-if firmware for Raspberry Pi Pico 2
+# Usage: ./build [clean]   (pass "clean" to wipe the build directory first)
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIRMWARE_DIR="$SCRIPT_DIR/firmware"
+BUILD_DIR="$FIRMWARE_DIR/build"
+PICO_SDK_PATH="${PICO_SDK_PATH:-$SCRIPT_DIR/../pico-sdk}"
+
+# ARM toolchain: prefer the official ARM GNU Toolchain (includes newlib/nosys.specs)
+# over the bare homebrew arm-none-eabi-gcc formula which lacks newlib.
+ARM_TOOLCHAIN_PATH="${ARM_TOOLCHAIN_PATH:-$SCRIPT_DIR/../arm-toolchain/bin}"
+if [ -d "$ARM_TOOLCHAIN_PATH" ]; then
+  export PATH="$ARM_TOOLCHAIN_PATH:$PATH"
+fi
+
+if [ ! -f "$PICO_SDK_PATH/pico_sdk_init.cmake" ]; then
+  echo "ERROR: pico-sdk not found at $PICO_SDK_PATH"
+  echo "  Set PICO_SDK_PATH or place the SDK at $(dirname "$PICO_SDK_PATH")/pico-sdk"
+  exit 1
+fi
+
+export PICO_SDK_PATH
+
+if [ "${1:-}" = "clean" ]; then
+  echo "→ Cleaning build directory..."
+  rm -rf "$BUILD_DIR"
+fi
+
+mkdir -p "$BUILD_DIR"
+
+echo "→ Configuring (cmake)..."
+cmake -S "$FIRMWARE_DIR" -B "$BUILD_DIR" \
+  -DPICO_BOARD=pico2 \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  --fresh 2>&1
+
+echo "→ Building..."
+cmake --build "$BUILD_DIR" -- -j"$(sysctl -n hw.logicalcpu)"
+
+echo ""
+echo "✓ Build complete. Output files:"
+ls -lh "$BUILD_DIR"/lpd8_if.uf2 "$BUILD_DIR"/lpd8_if.elf 2>/dev/null || true

@@ -10,9 +10,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
 
+# ── External MIDI host library ───────────────────────────────────────────────
+# rppicomidi/usb_midi_host provides the MIDI host class driver for TinyUSB.
+# The bundled TinyUSB 0.18.0 in pico-sdk does not yet include a native MIDI
+# host driver; switch to the native driver when pico-sdk updates to a TinyUSB
+# release that includes midi_host.c.
+add_subdirectory(lib/usb_midi_host)
+
+# ── Firmware target ──────────────────────────────────────────────────────────
 add_executable(lpd8_if
     src/main.c
-    src/usb_midi_host.c
+    src/midi_app.c
     src/midi_handler.c
     src/mcp4728.c
     src/gate_driver.c
@@ -29,11 +37,15 @@ target_include_directories(lpd8_if PRIVATE
 # hardware_i2c      — I2C peripheral (MCP4728)
 # tinyusb_host      — TinyUSB host stack (native RP2040/RP2350 USB controller)
 # tinyusb_board     — BSP glue required by TinyUSB
+# usb_midi_host     — MIDI class driver (rppicomidi external library)
+# usb_midi_host_app_driver — registers the MIDI class driver with TinyUSB
 target_link_libraries(lpd8_if
     pico_stdlib
     hardware_i2c
     tinyusb_host
     tinyusb_board
+    usb_midi_host
+    usb_midi_host_app_driver
 )
 
 # UART stdio for debug output (GP0/GP1). Disable for final panel build.
