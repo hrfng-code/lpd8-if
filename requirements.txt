@@ -1,0 +1,11 @@
+# Python tooling for lpd8-if
+# Activate with: source .venv/bin/activate
+
+# MIDI testing / debugging
+mido==1.3.3          # pure-Python MIDI library (read/write .mid files, test MIDI messages)
+# python-rtmidi      # backend for mido with real MIDI port access
+#                    # requires Xcode Command Line Tools: xcode-select --install
+#                    # then: pip install python-rtmidi
+
+# Serial monitor for UART debug output from the Pico
+pyserial==3.5

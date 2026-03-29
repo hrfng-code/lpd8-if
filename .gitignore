@@ -1,0 +1,40 @@
+# ── Firmware build artefacts ─────────────────────────────────────────────────
+firmware/build/
+*.elf
+*.uf2
+*.bin
+*.hex
+*.map
+*.dis
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# ── Python virtual environment ────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── KiCad ────────────────────────────────────────────────────────────────────
+# Keep project and source files; ignore generated outputs
+hardware/kicad/**/*-backups/
+hardware/kicad/**/*.000
+hardware/kicad/**/*.bak
+hardware/kicad/_autosave-*
+hardware/kicad/*.lck
+# Keep fab outputs that are checked in deliberately
+# hardware/fab/ is tracked
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Editors ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
