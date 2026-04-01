@@ -231,11 +231,11 @@ pip install -r requirements.txt
 
 ## Branch and Commit Conventions
 
-Current development branch: `claude/add-claude-documentation-PuXtO`
+**Always commit directly to `main`.** Do not create feature branches or session branches. Every commit goes straight to `main` unless the user explicitly asks for a branch.
 
-Commit message style observed in history:
+Commit message style:
 - `feat(scope): description` — new functionality
 - `fix(scope): description` — bug fixes
 - `chore: description` — tooling, build, non-functional changes
 
-Scope examples: `firmware`, `build`
+Scope examples: `firmware`, `build`, `hardware`
