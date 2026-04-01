@@ -239,3 +239,7 @@ Commit message style:
 - `chore: description` — tooling, build, non-functional changes
 
 Scope examples: `firmware`, `build`, `hardware`
+
+### End-of-Session Reminder
+
+When the user signals they are closing or leaving a session (e.g. "see you", "bye", "talk later", "I'll be back", "switching apps"), always check for uncommitted changes (`git status`) and, if any exist, ask: **"Want me to commit the changes before you go?"**
